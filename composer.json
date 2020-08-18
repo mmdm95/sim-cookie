@@ -1,0 +1,22 @@
+{
+  "name": "mmdm/sim-cookie",
+  "description": "A simple yet nice cookie management library",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "MMDM",
+      "email": "mmdehghan95@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Sim\\Cookie\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.2",
+    "mmdm/sim-crypt": "^1.0",
+    "ext-json": "*"
+  }
+}

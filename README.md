@@ -263,7 +263,7 @@ $has_cart = $cookie->has('cart_items');
 
 # Dependencies
 There is just one dependency and it is [Crypt][1] library. With this 
-feature, if any session hijacking happens, they can't see actual 
+feature, if any cookie hijacking happens, they can't see actual 
 data because it is encrypted.
 
 # License

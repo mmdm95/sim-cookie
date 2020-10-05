@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e80e79d123836bc7939dbc96c8c169e",
+    "content-hash": "52ad9e5d1b96018d917eb5cc3fd7b34a",
     "packages": [
         {
             "name": "mmdm/sim-crypt",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mmdm95/sim-crypt.git",
-                "reference": "f6029a9cbe4fd5c656bd9de83330d9ff79a09b98"
+                "reference": "7146a94e9e1e1fd558f3ca1cab50e31a18ec4ee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmdm95/sim-crypt/zipball/f6029a9cbe4fd5c656bd9de83330d9ff79a09b98",
-                "reference": "f6029a9cbe4fd5c656bd9de83330d9ff79a09b98",
+                "url": "https://api.github.com/repos/mmdm95/sim-crypt/zipball/7146a94e9e1e1fd558f3ca1cab50e31a18ec4ee5",
+                "reference": "7146a94e9e1e1fd558f3ca1cab50e31a18ec4ee5",
                 "shasum": ""
             },
             "require": {
@@ -41,7 +41,7 @@
                 }
             ],
             "description": "A simple yet nice encryption/decryption library",
-            "time": "2020-07-28T23:29:13+00:00"
+            "time": "2020-10-05T22:15:19+00:00"
         }
     ],
     "packages-dev": [],
@@ -51,7 +51,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "ext-json": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

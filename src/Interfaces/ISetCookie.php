@@ -13,7 +13,7 @@ interface ISetCookie
     /**
      * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * @param string $value
@@ -24,7 +24,7 @@ interface ISetCookie
     /**
      * @return string
      */
-    public function getValue();
+    public function getValue(): string;
 
     /**
      * @param int|string $expire
@@ -46,7 +46,7 @@ interface ISetCookie
     /**
      * @return string|null
      */
-    public function getPath(): string;
+    public function getPath(): ?string;
 
     /**
      * @param string|null $domain
@@ -57,7 +57,7 @@ interface ISetCookie
     /**
      * @return string|null
      */
-    public function getDomain();
+    public function getDomain(): ?string;
 
     /**
      * @param bool|null $answer
@@ -68,7 +68,7 @@ interface ISetCookie
     /**
      * @return bool|null
      */
-    public function isSecure(): bool;
+    public function isSecure(): ?bool;
 
     /**
      * @param bool|null $answer
@@ -79,5 +79,5 @@ interface ISetCookie
     /**
      * @return bool|null
      */
-    public function isHttpOnly(): bool;
+    public function isHttpOnly(): ?bool;
 }

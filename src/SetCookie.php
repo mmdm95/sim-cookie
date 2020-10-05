@@ -83,7 +83,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -100,7 +100,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -144,7 +144,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function getPath(): string
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -161,7 +161,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function getDomain()
+    public function getDomain(): ?string
     {
         return $this->domain;
     }
@@ -178,7 +178,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function isSecure(): bool
+    public function isSecure(): ?bool
     {
         return $this->secure;
     }
@@ -195,7 +195,7 @@ class SetCookie implements ISetCookie
     /**
      * {@inheritdoc}
      */
-    public function isHttpOnly(): bool
+    public function isHttpOnly(): ?bool
     {
         return (bool)$this->httponly;
     }

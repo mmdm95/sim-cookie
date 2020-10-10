@@ -68,7 +68,7 @@ __construct(?string $name = null, string $value = "", ?int $expire = null, ?stri
 |   $expire   |  int   |    null   |
 |   $path     | string |    null   |
 |   $domain   | string |    null   |
-|   $secur e  |  bool  |    null   |
+|   $secure   |  bool  |    null   |
 |  $httponly  |  bool  |    null   |
 
 `setName($name): ISetCookie`

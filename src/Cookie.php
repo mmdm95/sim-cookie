@@ -111,6 +111,7 @@ class Cookie implements ICookie
         $cookie = $this->get($name);
         if (!is_null($cookie)) {
             $this->set(new SetCookie($name, "", time() - 3600));
+            unset($_COOKIE[$name]);
         }
         return $this;
     }

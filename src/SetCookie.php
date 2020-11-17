@@ -154,7 +154,7 @@ class SetCookie implements ISetCookie
      */
     public function setDomain(?string $domain): ISetCookie
     {
-        $this->path = $domain;
+        $this->domain = $domain;
         return $this;
     }
 

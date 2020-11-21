@@ -71,7 +71,7 @@ __construct(?string $name = null, string $value = "", ?int $expire = null, ?stri
 |   $secure   |  bool  |    null   |
 |  $httponly  |  bool  |    null   |
 
-`setName($name): ISetCookie`
+#### `setName($name): ISetCookie`
 
 Set cookie name with this method.
 
@@ -80,7 +80,7 @@ Set cookie name with this method.
 $set_cookie->setName($cookie_name);
 ```
 
-`getName()`
+#### `getName()`
 
 Get cookie name.
 
@@ -88,7 +88,7 @@ Get cookie name.
 $cookie_name = $set_cookie->getName();
 ```
 
-`setValue(string $value): ISetCookie`
+#### `setValue(string $value): ISetCookie`
 
 Set cookie's value
 
@@ -96,7 +96,7 @@ Set cookie's value
 $cookie_name = $set_cookie->setValue("A not important but need to store value");
 ```
 
-`getValue()`
+#### `getValue()`
 
 Get cookie value.
 
@@ -104,7 +104,7 @@ Get cookie value.
 $cookie_value = $set_cookie->getValue();
 ```
 
-`setExpiration($expire): ISetCookie`
+#### `setExpiration($expire): ISetCookie`
 
 Set cookie expiration.
 
@@ -118,7 +118,7 @@ Note: Also can pass string time like [+5 days]
 $set_cookie->setExpiration(time() + 300);
 ```
 
-`getExpiration(): int`
+#### `getExpiration(): int`
 
 Get cookie expiration.
 
@@ -126,7 +126,7 @@ Get cookie expiration.
 $expiration = $set_cookie->getExpiration();
 ```
 
-`setPath(string $path): ISetCookie`
+#### `setPath(string $path): ISetCookie`
 
 Set cookie path.
 
@@ -134,7 +134,7 @@ Set cookie path.
 $set_cookie->setPath('/');
 ```
 
-`getPath(): string`
+#### `getPath(): string`
 
 Get cookie path.
 
@@ -142,7 +142,7 @@ Get cookie path.
 $path = $set_cookie->getPath();
 ```
 
-`setDomain(string $domain): ISetCookie`
+#### `setDomain(string $domain): ISetCookie`
 
 Set cookie domain.
 
@@ -152,7 +152,7 @@ $set_cookie->setDomain('www.yourdomain.com');
 $set_cookie->setDomain('.yourdomain.com');
 ```
 
-`getDomain()`
+#### `getDomain()`
 
 Get cookie domain.
 
@@ -160,7 +160,7 @@ Get cookie domain.
 $domain = $set_cookie->getDomain();
 ```
 
-`setSecure(bool $answer): ISetCookie`
+#### `setSecure(bool $answer): ISetCookie`
 
 Set cookie secure parameter.
 
@@ -168,7 +168,7 @@ Set cookie secure parameter.
 $set_cookie->setSecure(true);
 ```
 
-`isSecure(): bool`
+#### `isSecure(): bool`
 
 Get cookie is secure or not.
 
@@ -176,7 +176,7 @@ Get cookie is secure or not.
 $secure = $set_cookie->isSecure();
 ```
 
-`setHttpOnly(?bool $answer): ISetCookie`
+#### `setHttpOnly(?bool $answer): ISetCookie`
 
 Set the cookie is http only or not.
 
@@ -184,7 +184,7 @@ Set the cookie is http only or not.
 $set_cookie->setHttpOnly(true);
 ```
 
-`isHttpOnly(): bool`
+#### `isHttpOnly(): bool`
 
 Get cookie is http only or not.
 
@@ -194,7 +194,7 @@ $httponly = $set_cookie->isHttpOnly();
 
 #### Cookie
 
-`set(ISetCookie $cookie, bool $encrypt = true): ICookie`
+#### `set(ISetCookie $cookie, bool $encrypt = true): ICookie`
 
 Set a cookie by passing an ISetCookie as parameter.
 
@@ -211,7 +211,7 @@ boolean to tell this library use encryption on cookies or not.
 $cookie->set(ISetCookie $set_cookie);
 ``` 
 
-`get(?string $name = null, $prefer = null)`
+#### `get(?string $name = null, $prefer = null)`
 
 Get a cookie by passing the name of it. If cookie is not exists, the 
 $prefer parameter will return.
@@ -229,7 +229,7 @@ pass null as first parameter.
 $cart_items = $cookie->get('cart_items');
 ```
 
-`getAsString(?string $name = null, bool $decrypt = false): string`
+#### `getAsString(?string $name = null, bool $decrypt = false): string`
 
 Get cookie as a semicolon separated key=value.
 
@@ -253,7 +253,7 @@ $cookie_string = $cookie->getAsString();
 "Cookie: cart_items=encoded_json; another-cookie-val=apropriate value"
 ```
 
-`remove(string $name): ICookie`
+#### `remove(string $name): ICookie`
 
 Remove a cookie with specific name.
 
@@ -261,12 +261,23 @@ Remove a cookie with specific name.
 $cookie->remove('cart_items');
 ```
 
-`has(string $name): bool`
+#### `has(string $name): bool`
 
 Check if a cookie exists.
 
 ```php
 $has_cart = $cookie->has('cart_items');
+```
+
+#### `public function prepareGetCookieValue($arrPrev)`
+
+Get (and decrypt) a value.
+
+**Note:** It is useful when there is a cookie value is inside a 
+header and want get actual value and check it.
+
+```php
+$value = $cookie->prepareGetCookieValue('the cookie value that is hashed or raw');
 ```
 
 # Dependencies

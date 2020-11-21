@@ -45,4 +45,12 @@ interface ICookie
      * @return bool
      */
     public function has(string $name): bool;
+
+    /**
+     * Prepare cookie value to retrieve (check if decryption need)
+     *
+     * @param $arrPrev
+     * @return mixed
+     */
+    public function prepareGetCookieValue($arrPrev);
 }

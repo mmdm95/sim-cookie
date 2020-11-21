@@ -125,6 +125,26 @@ class Cookie implements ICookie
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function prepareGetCookieValue($arrPrev)
+    {
+        $arr = json_decode($arrPrev, true);
+        if (is_null($arr)) return $arrPrev;
+        if (!isset($arr['_simplicity__data']) || !isset($arr['_simplicity__is_encrypted'])) return $arrPrev;
+
+        $value = $arr['_simplicity__data'];
+        if ($arr['_simplicity__is_encrypted'] && !is_null($this->crypt)) {
+            $value = $this->crypt->decrypt($value);
+            $value = $this->crypt->hasError() ? null : $value;
+        }
+        if (is_string($value)) {
+            $value = htmlspecialchars_decode($value);
+        }
+        return $value;
+    }
+
+    /**
      * Prepare cookie value to store (check if encryption need)
      *
      * @param $value
@@ -144,28 +164,5 @@ class Cookie implements ICookie
             '_simplicity__data' => $value,
             '_simplicity__is_encrypted' => $encrypt,
         ]);
-    }
-
-    /**
-     * Prepare cookie value to retrieve (check if decryption need)
-     *
-     * @param $arrPrev
-     * @return mixed
-     */
-    protected function prepareGetCookieValue($arrPrev)
-    {
-        $arr = json_decode($arrPrev, true);
-        if (is_null($arr)) return $arrPrev;
-        if (!isset($arr['_simplicity__data']) || !isset($arr['_simplicity__is_encrypted'])) return $arrPrev;
-
-        $value = $arr['_simplicity__data'];
-        if ($arr['_simplicity__is_encrypted'] && !is_null($this->crypt)) {
-            $value = $this->crypt->decrypt($value);
-            $value = $this->crypt->hasError() ? null : $value;
-        }
-        if (is_string($value)) {
-            $value = htmlspecialchars_decode($value);
-        }
-        return $value;
     }
 }

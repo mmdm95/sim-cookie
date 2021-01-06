@@ -4,6 +4,11 @@ namespace Sim\Cookie\Interfaces;
 
 interface ISetCookie
 {
+    const COOKIE_HEADER = 'Set-Cookie: ';
+    const SAME_SITE_NONE = 'None';
+    const SAME_SITE_LAX = 'Lax';
+    const SAME_SITE_STRICT = 'Strict';
+
     /**
      * @param string|null $name
      * @return ISetCookie
@@ -80,4 +85,28 @@ interface ISetCookie
      * @return bool|null
      */
     public function isHttpOnly(): ?bool;
+
+    /**
+     * @param string|null $same_site
+     * @return ISetCookie
+     */
+    public function setSameSite(?string $same_site): ISetCookie;
+
+    /**
+     * @return string|null
+     */
+    public function getSameSite(): ?string;
+
+    /**
+     * Set extra string for cookie
+     *
+     * @param string $extra
+     * @return ISetCookie
+     */
+    public function setExtra(string $extra): ISetCookie;
+
+    /**
+     * @return string
+     */
+    public function getExtra(): string;
 }

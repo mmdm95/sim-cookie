@@ -5,8 +5,6 @@ use Sim\Cookie\SetCookie;
 use Sim\Crypt\Crypt;
 
 include_once '../../vendor/autoload.php';
-
-//include_once '../../vendor/mmdm/sim-crypt/autoloader.php';
 //include_once '../../autoloader.php';
 
 $main_key = 'fDhIL1dmU2swMyl+VEUxR3gkJWRJO0RQNUxRUks2aFZZKDJsOVhVYzdCNE52eiEreU9fPkA=';

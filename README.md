@@ -1,6 +1,13 @@
 # Simplicity Cookie
 A library for cookie management.
 
+## Features
+
+- Manage your cookies
+- Encrypt cookie with [Crypt][1] library(Optional)
+- Manage SameSite
+- Check useragent's support for SameSite
+
 ## Install
 **composer**
 ```php 
@@ -59,7 +66,7 @@ $the_cookie->setName($cookie_name)
 The parameters you send to construct is the same type as using 
 available methods.
 
-__construct(?string $name = null, string $value = "", ?int $expire = null, ?string $path = '/', $domain = null, $secure = null, $httponly = null)
+__construct(?string $name = null, string $value = "", ?int $expire = null, ?string $path = '/', $domain = null, $secure = null, $httponly = null, ?string $same_site = null, string $extra_string = '')
 
 |  Parameter  |  Type  |  Default  |
 |:------------|:-------|:----------|
@@ -70,6 +77,8 @@ __construct(?string $name = null, string $value = "", ?int $expire = null, ?stri
 |   $domain   | string |    null   |
 |   $secure   |  bool  |    null   |
 |  $httponly  |  bool  |    null   |
+| $same_site  |?string |    null   |
+|$extra_string| string |    ""     |
 
 #### `setName($name): ISetCookie`
 
@@ -192,19 +201,73 @@ Get cookie is http only or not.
 $httponly = $set_cookie->isHttpOnly();
 ```
 
+#### `setSameSite(?string $same_site): ISetCookie`
+
+Set samesite restriction.
+
+Can be following strings or null to not set at all:
+
+- None
+- Lax
+- Strict
+
+that can be set through constants of `ISetCookie` interface
+
+- SAME_SITE_NONE
+- SAME_SITE_LAX
+- SAME_SITE_STRICT
+
+#### `getSameSite(): ?string`
+
+Get `sameSite` string.
+
+#### `setExtra(string $extra): ISetCookie`
+
+Set extra string to cookie if needed.
+
+#### `getExtra(): string`
+
+Get extra cookie string.
+
 #### Cookie
 
-#### `set(ISetCookie $cookie, bool $encrypt = true): ICookie`
+#### `parse(string $cookie_string, bool $decode = false): ?ISetCookie`
+
+Send a cookie string to parse it into `SetCookie` object or null if 
+it can't parse.
+
+**Note:** To decode value of parsed string, pass true 
+to `$decode` parameter.
+
+|  Parameter   |    Type    |  Default  |
+|--------------|------------|-----------|
+|$cookie_string| ISetCookie |           |
+|   $decode    |    bool    |   false   |
+
+#### `set(ISetCookie $cookie, bool $encrypt = true, ?string $useragent = null): ICookie`
 
 Set a cookie by passing an ISetCookie as parameter.
 
-Note: If you use [Crypt][1] library as a dependency, you can pass a 
+**Note:** Cookie will set if headers not sent already, otherwise 
+it'll ignore the cookie.
+
+**Note:** This method will check if an agent can support `None` 
+as value of `SameSite` or not. If not support, it'll be remove 
+from `$cookie` array.
+
+Please see [This website][2] for more information about 
+`SameSite` issues.
+
+**Note:** If `SameSite` is `None`, it'll set `secure` to true.
+
+**Note:** If you use [Crypt][1] library as a dependency, you can pass a 
 boolean to tell this library use encryption on cookies or not.
 
 |  Parameter  |    Type    |  Default  |
 |-------------|------------|-----------|
 |   $cookie   | ISetCookie |           |
 |   $encrypt  |    bool    |   true    |
+|  $useragent |  ?string   |   null    |
 
 ```php
 // set a cookie
@@ -269,6 +332,11 @@ Check if a cookie exists.
 $has_cart = $cookie->has('cart_items');
 ```
 
+#### `toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = false): string`
+
+Give a `ISetCookie` and this will convert it into a valid 
+cookie string.
+
 #### `public function prepareGetCookieValue($arrPrev)`
 
 Get (and decrypt) a value.
@@ -289,3 +357,4 @@ data because it is encrypted.
 Under MIT license.
 
 [1]: https://github.com/mmdm95/sim-crypt
+[2]: https://www.chromium.org/updates/same-site/incompatible-clients

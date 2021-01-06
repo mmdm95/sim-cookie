@@ -5,6 +5,7 @@ namespace Sim\Cookie;
 use Sim\Cookie\Interfaces\ICookie;
 use Sim\Cookie\Exceptions\CookieException;
 use Sim\Cookie\Interfaces\ISetCookie;
+use Sim\Cookie\Utils\SameSiteUtil;
 use Sim\Crypt\Crypt;
 
 class Cookie implements ICookie
@@ -25,26 +26,70 @@ class Cookie implements ICookie
 
     /**
      * {@inheritdoc}
+     * @see https://github.com/delight-im/PHP-Cookie/blob/a87055f755514f5e3285dbaf02bda2f2f6294f69/src/Cookie.php
+     */
+    public function parse(string $cookie_string, bool $decode = false): ?ISetCookie
+    {
+        if (empty($cookie_string)) {
+            return null;
+        }
+
+        // do parse
+        if (\preg_match('/^' . ISetCookie::COOKIE_HEADER . '(.*?)=(.*?)(?:; (.*?))?$/i', $cookie_string, $matches)) {
+            $cookie = new SetCookie($matches[1]);
+
+            $cookie->setPath(null);
+            $cookie->setHttpOnly(false);
+            $value = $decode ? \urldecode($matches[2]) : $matches[2];
+            $cookie->setValue($value);
+            $cookie->setSameSite(null);
+
+            if (\count($matches) >= 4) {
+                $attributes = \explode('; ', $matches[3]);
+
+                foreach ($attributes as $attribute) {
+                    if (\strcasecmp($attribute, 'HttpOnly') === 0) {
+                        $cookie->setHttpOnly(true);
+                    } elseif (\strcasecmp($attribute, 'Secure') === 0) {
+                        $cookie->setSecure(true);
+                    } elseif (\stripos($attribute, 'Expires=') === 0) {
+                        $cookie->setExpiration((int)\strtotime(\substr($attribute, 8)));
+                    } elseif (\stripos($attribute, 'Domain=') === 0) {
+                        $cookie->setDomain(\substr($attribute, 7));
+                    } elseif (\stripos($attribute, 'Path=') === 0) {
+                        $cookie->setPath(\substr($attribute, 5));
+                    } elseif (\stripos($attribute, 'SameSite=') === 0) {
+                        $cookie->setSameSite(\substr($attribute, 9));
+                    }
+                }
+            }
+
+            return $cookie;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
      * @throws CookieException
      */
-    public function set(ISetCookie $cookie, bool $encrypt = true): ICookie
+    public function set(ISetCookie $cookie, bool $encrypt = true, ?string $useragent = null): ICookie
     {
         if ($cookie instanceof ISetCookie) {
             if (empty($cookie->getName())) {
                 throw new CookieException("Cookie's name is invalid! Please enter a valid cookie name.");
             }
 
-            $value = $this->prepareSetCookieValue($cookie->getValue(), $encrypt);
+            if (empty($useragent)) {
+                $useragent = SameSiteUtil::getUserAgent();
+            }
+            if (!SameSiteUtil::shouldSendSameSiteNone($useragent)) {
+                $cookie->setSameSite(null);
+            }
 
-            \setcookie(
-                $cookie->getName(),
-                $value,
-                $cookie->getExpiration(),
-                $cookie->getPath(),
-                $cookie->getDomain(),
-                $cookie->isSecure(),
-                $cookie->isHttponly()
-            );
+            $value = $this->prepareSetCookieValue($cookie->getValue(), $encrypt);
+            $this->setCookieToHeader($this->toString($cookie, false, $encrypt));
 
             $_COOKIE[$cookie->getName()] = $value;
         }
@@ -126,6 +171,69 @@ class Cookie implements ICookie
 
     /**
      * {@inheritdoc}
+     * @see https://github.com/delight-im/PHP-Cookie/blob/a87055f755514f5e3285dbaf02bda2f2f6294f69/src/Cookie.php
+     */
+    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = false): string
+    {
+        $expireTime = $cookie->getExpiration();
+
+        $maxAgeStr = 0 === $expireTime ? 0 : ($expireTime - \time());
+        $maxAgeStr = ((\PHP_VERSION_ID >= 70019 && \PHP_VERSION_ID < 70100) || \PHP_VERSION_ID >= 70105)
+            ? ($maxAgeStr < 0
+                ? '0'
+                : (string)$maxAgeStr)
+            : (string)$maxAgeStr;
+        $expireTimeStr = \gmdate('D, d-M-Y H:i:s T', $expireTime);
+
+        $value = $this->prepareSetCookieValue($decode ? \urldecode($cookie->getValue()) : $cookie->getValue(), $encrypt);
+        $headerStr = ISetCookie::COOKIE_HEADER . $cookie->getName() . '=' . $value;
+
+        if ($expireTime > 0) {
+            $headerStr .= '; expires=' . $expireTimeStr;
+        }
+        if ($expireTime > 0) {
+            $headerStr .= '; Max-Age=' . $maxAgeStr;
+        }
+
+        $path = $cookie->getPath();
+        if (!empty($path)) {
+            $headerStr .= '; path=' . $path;
+        }
+
+        $domain = $cookie->getDomain();
+        if (!empty($domain)) {
+            $headerStr .= '; domain=' . $domain;
+        }
+
+        if ($cookie->isSecure()) {
+            $headerStr .= '; secure';
+        }
+        if ($cookie->isHttpOnly()) {
+            $headerStr .= '; httponly';
+        }
+
+        $sameSite = $cookie->getSameSite();
+        if (!is_null($sameSite)) {
+            if ($sameSite === ISetCookie::SAME_SITE_NONE) {
+                if (!$cookie->isSecure()) {
+                    $headerStr .= '; secure';
+                }
+                $headerStr .= '; SameSite=None';
+            } elseif ($sameSite === ISetCookie::SAME_SITE_LAX) {
+                $headerStr .= '; SameSite=Lax';
+            } elseif ($sameSite === ISetCookie::SAME_SITE_STRICT) {
+                $headerStr .= '; SameSite=Strict';
+            }
+        }
+
+        $extra = ltrim(trim((string)$cookie->getExtra()), ';');
+        $headerStr .= !empty($extra) ? '; ' . $extra : '';
+
+        return $headerStr;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function prepareGetCookieValue($arrPrev)
     {
@@ -164,5 +272,25 @@ class Cookie implements ICookie
             '_simplicity__data' => $value,
             '_simplicity__is_encrypted' => $encrypt,
         ]);
+    }
+
+    /**
+     * Add a cookie string to header
+     *
+     * Note: If headers are already sent,
+     *       it'll return false otherwise,
+     *       return true
+     *
+     * @param string $cookie
+     * @return bool
+     */
+    protected function setCookieToHeader(string $cookie): bool
+    {
+        if (!\headers_sent() && !empty($cookie)) {
+            \header($cookie, false);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

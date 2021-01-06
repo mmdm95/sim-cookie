@@ -24,7 +24,7 @@ class SetCookie implements ISetCookie
     /**
      * @var string $path
      */
-    protected $path = "";
+    protected $path = "/";
 
     /**
      * @var string $domain
@@ -42,6 +42,16 @@ class SetCookie implements ISetCookie
     protected $httponly = false;
 
     /**
+     * @var string|null $same_site
+     */
+    protected $same_site = null;
+
+    /**
+     * @var string $extra_string
+     */
+    protected $extra_string = '';
+
+    /**
      * SetCookie constructor.
      * @param string|null $name
      * @param string $value
@@ -50,6 +60,8 @@ class SetCookie implements ISetCookie
      * @param string $domain
      * @param bool $secure
      * @param bool $httponly
+     * @param string|null $same_site
+     * @param string $extra_string
      */
     public function __construct(?string $name = null,
                                 string $value = "",
@@ -57,7 +69,9 @@ class SetCookie implements ISetCookie
                                 string $path = null,
                                 string $domain = null,
                                 bool $secure = null,
-                                bool $httponly = null
+                                bool $httponly = null,
+                                ?string $same_site = null,
+                                string $extra_string = ''
     )
     {
         $this->setName($name)
@@ -66,7 +80,9 @@ class SetCookie implements ISetCookie
             ->setPath($path)
             ->setDomain($domain)
             ->setSecure($secure)
-            ->setHttponly($httponly);
+            ->setHttponly($httponly)
+            ->setSameSite($same_site)
+            ->setExtra($extra_string);
     }
 
     /**
@@ -74,7 +90,7 @@ class SetCookie implements ISetCookie
      */
     public function setName(?string $name): ISetCookie
     {
-        if (!is_null($name)) {
+        if (!empty($name) && !\preg_match('/[=,; \\t\\r\\n\\013\\014]/', $name)) {
             $this->name = $name;
         }
         return $this;
@@ -154,7 +170,7 @@ class SetCookie implements ISetCookie
      */
     public function setDomain(?string $domain): ISetCookie
     {
-        $this->domain = $domain;
+        $this->domain = $this->normalizeDomain($domain);
         return $this;
     }
 
@@ -201,6 +217,44 @@ class SetCookie implements ISetCookie
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setSameSite(?string $same_site): ISetCookie
+    {
+        if (is_null($same_site)) {
+            $this->same_site = null;
+        } elseif (in_array($same_site, [ISetCookie::SAME_SITE_NONE, ISetCookie::SAME_SITE_LAX, ISetCookie::SAME_SITE_STRICT])) {
+            $this->same_site = $same_site;
+        }
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSameSite(): ?string
+    {
+        return $this->same_site;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExtra(string $extra): ISetCookie
+    {
+        $this->extra_string = $extra;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExtra(): string
+    {
+        return $this->extra_string;
+    }
+
+    /**
      * @param $timestamp
      * @return bool
      */
@@ -208,5 +262,22 @@ class SetCookie implements ISetCookie
     {
         return ($timestamp <= PHP_INT_MAX)
             && ($timestamp >= ~PHP_INT_MAX);
+    }
+
+    /**
+     * @param string $domain
+     * @return string
+     */
+    protected function normalizeDomain(?string $domain): string
+    {
+        if (
+            empty($domain) ||
+            \filter_var($domain, FILTER_VALIDATE_IP) !== false ||
+            (\strpos($domain, '.') === false || \strrpos($domain, '.') === 0)
+        ) {
+            return null;
+        }
+        $domain = $domain[0] !== '.' ? '.' . $domain : $domain;
+        return $domain;
     }
 }

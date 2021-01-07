@@ -81,15 +81,8 @@ class Cookie implements ICookie
                 throw new CookieException("Cookie's name is invalid! Please enter a valid cookie name.");
             }
 
-            if (empty($useragent)) {
-                $useragent = SameSiteUtil::getUserAgent();
-            }
-            if (!SameSiteUtil::shouldSendSameSiteNone($useragent)) {
-                $cookie->setSameSite(null);
-            }
-
             $value = $this->prepareSetCookieValue($cookie->getValue(), $encrypt);
-            $this->setCookieToHeader($this->toString($cookie, false, $encrypt));
+            $this->setCookieToHeader($this->toString($cookie, false, $encrypt, $useragent));
 
             $_COOKIE[$cookie->getName()] = $value;
         }
@@ -172,8 +165,9 @@ class Cookie implements ICookie
     /**
      * {@inheritdoc}
      * @see https://github.com/delight-im/PHP-Cookie/blob/a87055f755514f5e3285dbaf02bda2f2f6294f69/src/Cookie.php
+     * @throws CookieException
      */
-    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = false): string
+    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = true, ?string $useragent = null): string
     {
         $expireTime = $cookie->getExpiration();
 
@@ -210,6 +204,14 @@ class Cookie implements ICookie
         }
         if ($cookie->isHttpOnly()) {
             $headerStr .= '; httponly';
+        }
+
+        // check for SameSite support
+        if (empty($useragent)) {
+            $useragent = SameSiteUtil::getUserAgent();
+        }
+        if (!SameSiteUtil::shouldSendSameSiteNone($useragent)) {
+            $cookie->setSameSite(null);
         }
 
         $sameSite = $cookie->getSameSite();

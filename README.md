@@ -332,9 +332,9 @@ Check if a cookie exists.
 $has_cart = $cookie->has('cart_items');
 ```
 
-#### `toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = false): string`
+#### `toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = true, ?string $useragent = null): string`
 
-Give a `ISetCookie` and this will convert it into a valid 
+Give a `ISetCookie` and this method will convert it into a valid 
 cookie string.
 
 #### `public function prepareGetCookieValue($arrPrev)`

@@ -1,6 +1,7 @@
 <?php
 
 use Sim\Cookie\Cookie;
+use Sim\Cookie\Interfaces\ISetCookie;
 use Sim\Cookie\SetCookie;
 use Sim\Cookie\Utils\SameSiteUtil;
 use Sim\Crypt\Crypt;
@@ -32,7 +33,6 @@ $test_agents = [
     'Chrome 60' => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36,",
     'UC browser 12.13.5' => "Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36",
     'Uc Browser 11.5.1' => "Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36",
-    'Chrome 70' => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36",
     'firefox' => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:57.0) Gecko/20100101 Firefox/57.0",
 ];
 
@@ -47,6 +47,18 @@ $cookieName = 'tmp-cookie';
 //var_dump($cookie->get($cookieName));
 
 //var_dump($cookie->getAsString(null, true));
+
+// test toString from Cookie class
+//$cookieSet = new SetCookie($cookieName, 'A simple cookie', time() + 60);
+//$cookieSet->setSameSite(ISetCookie::SAME_SITE_NONE);
+//
+//$cookieSet2 = new SetCookie($cookieName, 'A simple cookie number 2', time() + 60);
+//$cookieSet2->setSameSite(ISetCookie::SAME_SITE_NONE);
+//
+//echo "<pre>";
+//var_dump($cookie->toString($cookieSet, false, true, "Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36"));
+//var_dump($cookie->toString($cookieSet2, false, true, "Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36"));
+//echo "</pre>";
 
 // test SameSiteUtil
 //foreach ($test_agents as $name => $agent) {

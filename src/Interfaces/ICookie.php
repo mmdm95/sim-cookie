@@ -60,9 +60,10 @@ interface ICookie
      * @param ISetCookie $cookie
      * @param bool $decode
      * @param bool $encrypt
+     * @param string|null $useragent
      * @return string
      */
-    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = false): string;
+    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = true, ?string $useragent = null): string;
 
     /**
      * Prepare cookie value to retrieve (check if decryption need)

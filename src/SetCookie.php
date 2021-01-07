@@ -275,7 +275,7 @@ class SetCookie implements ISetCookie
             \filter_var($domain, FILTER_VALIDATE_IP) !== false ||
             (\strpos($domain, '.') === false || \strrpos($domain, '.') === 0)
         ) {
-            return null;
+            return '';
         }
         $domain = $domain[0] !== '.' ? '.' . $domain : $domain;
         return $domain;

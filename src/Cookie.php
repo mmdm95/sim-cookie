@@ -117,26 +117,25 @@ class Cookie implements ICookie
      */
     public function getAsString(?string $name = null, bool $decrypt = false): string
     {
-        $cookieString = '';
+        $cookieArr = [];
         if ($decrypt) {
             $cookie = $this->get($name);
         } else {
             $cookie = !is_null($name) ? $_COOKIE[$name] : $_COOKIE;
         }
         if (!is_null($cookie)) {
-            $cookieString = 'Cookie: ';
             if (is_array($cookie)) {
                 foreach ($cookie as $name => $cookieValue) {
                     if (!is_null($cookieValue)) {
-                        $cookieString .= $name . '=' . $cookieValue . '; ';
+                        $cookieArr[] = $name . '=' . $cookieValue;
                     }
                 }
             } elseif (!is_null($cookie)) {
-                $cookieString .= $name . '=' . $cookie . '; ';
+                $cookieArr[] = $name . '=' . $cookie;
             }
         }
 
-        $cookieString = trim(trim($cookieString), ';');
+        $cookieString = 'Cookie: ' . implode('; ', $cookieArr) . "\r\n";
         return $cookieString;
     }
 

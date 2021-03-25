@@ -11,7 +11,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Sim\\Cookie\\": "src/"
+      "Sim\\Cookie\\": "src/",
+      "Sim\\Cookie\\Tests\\": "Tests/"
     }
   },
   "require": {

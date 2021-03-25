@@ -3,7 +3,7 @@
 use Sim\Cookie\Cookie;
 use Sim\Cookie\SetCookie;
 
-include_once '../../vendor/autoload.php';
+include_once '../vendor/autoload.php';
 
 $cookie = new Cookie();
 $cookieName = 'tmp-cookie';

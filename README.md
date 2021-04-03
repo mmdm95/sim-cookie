@@ -30,7 +30,7 @@ and you are good to go.
 // to instantiate a cookie object
 $cookie = new Cookie();
 
-// then use cookies method like
+// then use cookie methods like
 $cookie->get($cookie_name);
 ```
 

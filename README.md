@@ -45,7 +45,7 @@ $cookie = new Cookie($crypt);
 ```
 
 If you don't need some of your cookies to be secure, pass false 
-as last parameter of set method.
+as last parameter of setValue of `ISetCookie` method.
 
 ## Available methods
 

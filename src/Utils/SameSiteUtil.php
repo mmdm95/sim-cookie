@@ -32,7 +32,7 @@ class SameSiteUtil
         if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_USER_AGENT'])) {
             $useragent = $_SERVER['HTTP_USER_AGENT'];
         } else {
-            if (php_sapi_name() != 'cli' || (php_sapi_name() === 'cli' && !$ignore_cli_errors)) {
+            if (\php_sapi_name() != 'cli' || (\php_sapi_name() === 'cli' && !$ignore_cli_errors)) {
                 throw new CookieException("No User agent founded!");
             }
         }
@@ -91,7 +91,7 @@ class SameSiteUtil
     private static function isIosVersion(int $major, string $useragent): bool
     {
         $matches = [];
-        if (preg_match(self::IS_IOS_VERSION_REGEX, $useragent, $matches)) {
+        if (\preg_match(self::IS_IOS_VERSION_REGEX, $useragent, $matches)) {
             return $matches[1] == $major;
         }
         return false;
@@ -106,7 +106,7 @@ class SameSiteUtil
     private static function isMacosxVersion(int $major, int $minor, string $useragent): bool
     {
         $matches = [];
-        if (preg_match(self::IS_MACOSX_VERSION_REGEX, $useragent, $matches)) {
+        if (\preg_match(self::IS_MACOSX_VERSION_REGEX, $useragent, $matches)) {
             return $matches[1] == $major && $matches[2] == $minor;
         }
         return false;
@@ -118,7 +118,7 @@ class SameSiteUtil
      */
     private static function isSafari(string $useragent): bool
     {
-        return (bool)preg_match(self::IS_SAFARI_REGEX, $useragent) && !self::isChromiumBased($useragent);
+        return (bool)\preg_match(self::IS_SAFARI_REGEX, $useragent) && !self::isChromiumBased($useragent);
     }
 
     /**
@@ -127,7 +127,7 @@ class SameSiteUtil
      */
     private static function isMacEmbeddedBrowser(string $useragent): bool
     {
-        return (bool)preg_match(self::IS_MAC_EMBEDDED_BROWSER_REGEX, $useragent);
+        return (bool)\preg_match(self::IS_MAC_EMBEDDED_BROWSER_REGEX, $useragent);
     }
 
     /**
@@ -147,7 +147,7 @@ class SameSiteUtil
     private static function isChromiumVersionAtLeast(int $major, string $useragent): bool
     {
         $matches = [];
-        if (preg_match(self::IS_CHROMIUM_VERSION_AT_LEAST_REGEX, $useragent, $matches)) {
+        if (\preg_match(self::IS_CHROMIUM_VERSION_AT_LEAST_REGEX, $useragent, $matches)) {
             return (int)$matches[1] >= $major;
         }
         return false;
@@ -159,7 +159,7 @@ class SameSiteUtil
      */
     private static function isUcBrowser(string $useragent): bool
     {
-        return preg_match(self::IS_UC_BROWSER_REGEX, $useragent);
+        return \preg_match(self::IS_UC_BROWSER_REGEX, $useragent);
     }
 
     /**
@@ -172,7 +172,7 @@ class SameSiteUtil
     private static function isUcBrowserVersionAtLeast(int $major, int $minor, int $build, string $useragent): bool
     {
         $matches = [];
-        if (preg_match(self::IS_UC_BROWSER_VERSION_AT_LEAST_REGEX, $useragent, $matches)) {
+        if (\preg_match(self::IS_UC_BROWSER_VERSION_AT_LEAST_REGEX, $useragent, $matches)) {
             $major_version = (int)$matches[1];
             $minor_version = (int)$matches[2];
             $build_version = (int)$matches[3];

@@ -4,24 +4,27 @@ namespace Sim\Cookie\Interfaces;
 
 interface ICookie
 {
+    const SAME_SITE_NONE = 'None';
+    const SAME_SITE_LAX = 'Lax';
+    const SAME_SITE_STRICT = 'Strict';
+
     /**
      * Parse a cookie string and save cookie data
      *
      * @param string $cookie_string
      * @param bool $decode
+     * @param bool $encrypt
      * @return ISetCookie|null
      */
-    public function parse(string $cookie_string, bool $decode = false): ?ISetCookie;
+    public function parse(string $cookie_string, bool $decode = false, bool $encrypt = true): ?ISetCookie;
 
     /**
      * Set and save cookie data
      *
-     * @param ISetCookie $cookie
-     * @param bool $encrypt
-     * @param string|null $useragent
-     * @return ICookie
+     * @param string $name
+     * @return ISetCookie
      */
-    public function set(ISetCookie $cookie, bool $encrypt = true, ?string $useragent = null): ICookie;
+    public function set(string $name): ISetCookie;
 
     /**
      * Get a/all cookie/cookies
@@ -57,19 +60,10 @@ interface ICookie
     public function has(string $name): bool;
 
     /**
-     * @param ISetCookie $cookie
-     * @param bool $decode
-     * @param bool $encrypt
-     * @param string|null $useragent
-     * @return string
-     */
-    public function toString(ISetCookie $cookie, bool $decode = false, bool $encrypt = true, ?string $useragent = null): string;
-
-    /**
      * Prepare cookie value to retrieve (check if decryption need)
      *
-     * @param $arrPrev
+     * @param string $str
      * @return mixed
      */
-    public function prepareGetCookieValue($arrPrev);
+    public function getCookieValueFromString(string $str);
 }

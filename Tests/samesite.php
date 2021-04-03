@@ -1,6 +1,7 @@
 <?php
 
 use Sim\Cookie\Cookie;
+use Sim\Cookie\Interfaces\ICookie;
 use Sim\Cookie\Interfaces\ISetCookie;
 use Sim\Cookie\SetCookie;
 use Sim\Cookie\Utils\SameSiteUtil;
@@ -40,25 +41,32 @@ $cookie = new Cookie(new Crypt($main_key, $assured_key));
 $cookieName = 'tmp-cookie';
 
 // comment these two lines after cookie set and check after 15 seconds, the value will be NULL
-//$cookieSet = new SetCookie($cookieName, 'I am a simple cookie. Eat me!', time() + 15);
-
-//$cookie->set($cookieSet);
-
+//$cookie
+//    ->set($cookieSet)
+//    ->setValue('I am a simple cookie. Eat me!')
+//    ->setExpiration(time() + 15)
+//    ->save();
+//
 //var_dump($cookie->get($cookieName));
-
 //var_dump($cookie->getAsString(null, true));
 
 // test toString from Cookie class
-//$cookieSet = new SetCookie($cookieName, 'A simple cookie', time() + 60);
-//$cookieSet->setSameSite(ISetCookie::SAME_SITE_NONE);
-//
-//$cookieSet2 = new SetCookie($cookieName, 'A simple cookie number 2', time() + 60);
-//$cookieSet2->setSameSite(ISetCookie::SAME_SITE_NONE);
-//
-//echo "<pre>";
-//var_dump($cookie->toString($cookieSet, false, true, "Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36"));
-//var_dump($cookie->toString($cookieSet2, false, true, "Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36"));
-//echo "</pre>";
+$cookieSet = $cookie->set($cookieName);
+$cookieSet->setValue('A simple cookie')
+    ->setExpiration(time() + 60)
+    ->setSameSite(ICookie::SAME_SITE_NONE)
+    ->save();
+
+$cookieSet2 = $cookie->set($cookieName);
+$cookieSet2->setValue('A simple cookie number 2')
+    ->setExpiration(time() + 60)
+    ->setSameSite(ICookie::SAME_SITE_NONE)
+    ->save();
+
+echo "<pre>";
+var_dump($cookieSet->setUseragent("Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36")->toString(false));
+var_dump($cookieSet2->setUseragent("Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36")->toString(false));
+echo "</pre>";
 
 // test SameSiteUtil
 //foreach ($test_agents as $name => $agent) {

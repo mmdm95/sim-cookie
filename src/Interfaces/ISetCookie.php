@@ -5,9 +5,13 @@ namespace Sim\Cookie\Interfaces;
 interface ISetCookie
 {
     const COOKIE_HEADER = 'Set-Cookie: ';
-    const SAME_SITE_NONE = 'None';
-    const SAME_SITE_LAX = 'Lax';
-    const SAME_SITE_STRICT = 'Strict';
+
+    /**
+     * Set cookie to cookie header
+     *
+     * @return bool
+     */
+    public function save(): bool;
 
     /**
      * @param string|null $name
@@ -22,9 +26,10 @@ interface ISetCookie
 
     /**
      * @param string $value
+     * @param bool $encrypt
      * @return ISetCookie
      */
-    public function setValue(string $value): ISetCookie;
+    public function setValue(?string $value, bool $encrypt = true): ISetCookie;
 
     /**
      * @return string
@@ -109,4 +114,28 @@ interface ISetCookie
      * @return string
      */
     public function getExtra(): string;
+
+    /**
+     * @param string|null $useragent
+     * @return ISetCookie
+     */
+    public function setUseragent(?string $useragent = null): ISetCookie;
+
+    /**
+     * @return string|null
+     */
+    public function getUseragent(): ?string;
+
+    /**
+     * Get all cookie config as a cookie string
+     *
+     * @param bool $decode
+     * @return string
+     */
+    public function toString(bool $decode = true): string;
+
+    /**
+     * @return mixed
+     */
+    public function __toString();
 }

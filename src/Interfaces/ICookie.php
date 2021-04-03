@@ -28,7 +28,9 @@ interface ICookie
 
     /**
      * Get a/all cookie/cookies
-     * Note: To get all cookies, do not send any parameter to function
+     *
+     * Note:
+     *   To get all cookies, do not send any parameter to method
      *
      * @param string|null $name
      * @param null $prefer
@@ -37,6 +39,9 @@ interface ICookie
     public function get(?string $name = null, $prefer = null);
 
     /**
+     * Note:
+     *   To get all cookies as string, send null as $name
+     *
      * @param string|null $name
      * @param bool $decrypt
      * @return string

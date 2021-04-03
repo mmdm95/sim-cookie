@@ -27,6 +27,7 @@ class Cookie implements ICookie
     /**
      * {@inheritdoc}
      * @see https://github.com/delight-im/PHP-Cookie/blob/a87055f755514f5e3285dbaf02bda2f2f6294f69/src/Cookie.php
+     * @throws CookieException
      */
     public function parse(string $cookie_string, bool $decode = false, bool $encrypt = true): ?ISetCookie
     {
@@ -76,14 +77,7 @@ class Cookie implements ICookie
      */
     public function set(string $name): ISetCookie
     {
-        $cookie = new SetCookie($this->crypt);
-
-        if ('' === \trim($name)) {
-            throw new CookieException("Cookie's name is invalid! Please enter a valid cookie name.");
-        }
-        $cookie->setName($name);
-
-        return $cookie;
+        return new SetCookie($name, $this->crypt);
     }
 
     /**

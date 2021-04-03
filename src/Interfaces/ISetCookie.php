@@ -14,12 +14,6 @@ interface ISetCookie
     public function save(): bool;
 
     /**
-     * @param string|null $name
-     * @return ISetCookie
-     */
-    public function setName(?string $name): ISetCookie;
-
-    /**
      * @return string|null
      */
     public function getName(): ?string;
@@ -130,9 +124,10 @@ interface ISetCookie
      * Get all cookie config as a cookie string
      *
      * @param bool $decode
+     * @param bool $decrypt
      * @return string
      */
-    public function toString(bool $decode = true): string;
+    public function toString(bool $decode = true, bool $decrypt = false): string;
 
     /**
      * @return mixed

@@ -68,14 +68,22 @@ class SetCookie implements ISetCookie
 
     /**
      * SetCookie constructor.
+     * @param string $name
      * @param ICrypt|null $crypt
+     * @throws CookieException
      */
-    public function __construct(ICrypt $crypt = null)
+    public function __construct(string $name, ICrypt $crypt = null)
     {
         $this->crypt = $crypt;
 
+        if (!$this->isValidName($name)) {
+            if ('' === \trim($name)) {
+                throw new CookieException("Cookie's name is invalid! Please enter a valid cookie name.");
+            }
+        }
+
         // reset all parameters
-        $this->setName(null)
+        $this->setName($name)
             ->setValue('')
             ->setExpiration(null)
             ->setPath(null)
@@ -95,18 +103,16 @@ class SetCookie implements ISetCookie
         // this is not useless, it'll return value if not encrypted here or
         // encrypted/not-encrypted value if encrypted here
         // here means in this library
-        $_COOKIE[$this->getName()] = !CookieUtil::isCookieEncryptedHere($this->value)
-            ? CookieUtil::prepareGetCookieValue($this->crypt, $this->value)
-            : $this->value;
-        return $this->setCookieToHeader($this->toString());
+        $_COOKIE[$this->getName()] = $this->getValueAccordingToEncryption();
+        return $this->setCookieToHeader($this->toString(true, false));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setName(?string $name): ISetCookie
+    protected function setName(string $name): ISetCookie
     {
-        if (!empty($name) && !(bool)\preg_match('/[=,; \\t\\r\\n\\013\\014]/', $name)) {
+        if ($this->isValidName($name)) {
             $this->name = $name;
         }
         return $this;
@@ -298,7 +304,7 @@ class SetCookie implements ISetCookie
      * @return string
      * @throws CookieException
      */
-    public function toString(bool $decode = true): string
+    public function toString(bool $decode = true, bool $decrypt = false): string
     {
         $expireTime = $this->getExpiration();
 
@@ -310,7 +316,8 @@ class SetCookie implements ISetCookie
             : (string)$maxAgeStr;
         $expireTimeStr = \gmdate('D, d-M-Y H:i:s T', $expireTime);
 
-        $value = $decode ? \urldecode($this->getValue()) : $this->getValue();
+        $value = $decrypt ? $this->getValue() : $this->getValueAccordingToEncryption();
+        $value = $decode ? \urldecode($value) : $value;
         $headerStr = ISetCookie::COOKIE_HEADER . $this->getName() . '=' . $value;
 
         if ($expireTime > 0) {
@@ -374,6 +381,15 @@ class SetCookie implements ISetCookie
     public function __toString()
     {
         return $this->toString();
+    }
+
+    /**
+     * @param string|null $name
+     * @return bool
+     */
+    protected function isValidName(?string $name)
+    {
+        return !empty($name) && !(bool)\preg_match('/[=,; \\t\\r\\n\\013\\014]/', $name);
     }
 
     /**
@@ -443,5 +459,15 @@ class SetCookie implements ISetCookie
             '_simplicity__data' => $value,
             '_simplicity__is_encrypted' => $encrypt,
         ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getValueAccordingToEncryption()
+    {
+        return !CookieUtil::isCookieEncryptedHere($this->value)
+            ? CookieUtil::prepareGetCookieValue($this->crypt, $this->value)
+            : $this->value;
     }
 }

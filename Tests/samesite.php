@@ -51,21 +51,24 @@ $cookieName = 'tmp-cookie';
 //var_dump($cookie->getAsString(null, true));
 
 // test toString from Cookie class
-$cookieSet = $cookie->set($cookieName);
+$cookieSet = $cookie->set($cookieName . '1');
 $cookieSet->setValue('A simple cookie')
     ->setExpiration(time() + 60)
     ->setSameSite(ICookie::SAME_SITE_NONE)
     ->save();
 
-$cookieSet2 = $cookie->set($cookieName);
+$cookieSet2 = $cookie->set($cookieName . '2');
 $cookieSet2->setValue('A simple cookie number 2')
     ->setExpiration(time() + 60)
     ->setSameSite(ICookie::SAME_SITE_NONE)
     ->save();
 
 echo "<pre>";
-var_dump($cookieSet->setUseragent("Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36")->toString(false));
-var_dump($cookieSet2->setUseragent("Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36")->toString(false));
+print_r($cookieSet->setUseragent("Mozilla/5.0 (Linux; U; Android 6.0.1; zh-CN; F5121 Build/34.0.A.1.247) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/40.0.2214.89 UCBrowser/11.5.1.944 Mobile Safari/537.36")->toString(false));
+echo "<br>";
+print_r($cookieSet2->setUseragent("Mozilla/5.0 (Linux; U; Android 10; en-US; GM1911 Build/QKQ1.190716.003) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.13.5.1209 Mobile Safari/537.36")->toString(false));
+//echo "<br>";
+//print_r($cookie->getAsString());
 echo "</pre>";
 
 // test SameSiteUtil

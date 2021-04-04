@@ -228,13 +228,13 @@ Example of output:
 "Set-Cookie: tmp-cookie=A simple cookie number 2; expires=Sat, 03-Apr-2021 10:45:55 GMT; Max-Age=60; secure; SameSite=None"
 ```
 
-#### `save(): bool`
+#### `save(bool $decode = true): bool`
 
-Save configured cookie.
+Save configured cookie. `$decode` will decode `value`.
 
 **Note**
 
-You MUST call this method to save cookie otherwise you missed 
+You **MUST** call this method to save cookie otherwise you missed 
 your cookie.
 
 # Dependencies

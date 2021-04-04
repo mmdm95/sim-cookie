@@ -9,9 +9,10 @@ interface ISetCookie
     /**
      * Set cookie to cookie header
      *
+     * @param bool $decode
      * @return bool
      */
-    public function save(): bool;
+    public function save(bool $decode = true): bool;
 
     /**
      * @return string|null

@@ -85,11 +85,11 @@ class SetCookie implements ISetCookie
         // reset all parameters
         $this->setName($name)
             ->setValue('')
-            ->setExpiration(null)
-            ->setPath(null)
+            ->setExpiration(0)
+            ->setPath('/')
             ->setDomain(null)
-            ->setSecure(null)
-            ->setHttponly(null)
+            ->setSecure(false)
+            ->setHttponly(false)
             ->setSameSite(null)
             ->setExtra('');
     }
@@ -98,13 +98,13 @@ class SetCookie implements ISetCookie
      * {@inheritdoc}
      * @throws CookieException
      */
-    public function save(): bool
+    public function save(bool $decode = true): bool
     {
         // this is not useless, it'll return value if not encrypted here or
         // encrypted/not-encrypted value if encrypted here
         // here means in this library
         $_COOKIE[$this->getName()] = $this->getValueAccordingToEncryption();
-        return $this->setCookieToHeader($this->toString(true, false));
+        return $this->setCookieToHeader($this->toString($decode, false));
     }
 
     /**

@@ -20,6 +20,7 @@ $cookie
     ->save();
 
 var_dump($cookie->get($cookieName));
+//var_dump($_COOKIE[$cookieName]);
 //var_dump($cookie->get());
 //var_dump($cookie->getAsString(null, false));
 //var_dump($cookie->getAsString(null, true));

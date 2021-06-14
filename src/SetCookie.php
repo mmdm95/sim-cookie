@@ -316,8 +316,9 @@ class SetCookie implements ISetCookie
             : (string)$maxAgeStr;
         $expireTimeStr = \gmdate('D, d-M-Y H:i:s T', $expireTime);
 
-        $value = $decrypt ? $this->getValue() : $this->getValueAccordingToEncryption();
+        $value = $this->getValue();
         $value = $decode ? \urldecode($value) : $value;
+        $value = $decrypt ? $value : $this->getValueAccordingToEncryption($value);
         $headerStr = ISetCookie::COOKIE_HEADER . $this->getName() . '=' . $value;
 
         if ($expireTime > 0) {
@@ -432,6 +433,7 @@ class SetCookie implements ISetCookie
     protected function setCookieToHeader(string $cookie): bool
     {
         if (!\headers_sent() && !empty($cookie)) {
+
             \header($cookie, false);
             return true;
         } else {
@@ -462,12 +464,14 @@ class SetCookie implements ISetCookie
     }
 
     /**
+     * @param string|null $value
      * @return mixed
      */
-    private function getValueAccordingToEncryption()
+    private function getValueAccordingToEncryption($value = null)
     {
-        return !CookieUtil::isCookieEncryptedHere($this->value)
-            ? CookieUtil::prepareGetCookieValue($this->crypt, $this->value)
-            : $this->value;
+        $value = \is_null($value) ? $this->value : $value;
+        return !CookieUtil::isCookieEncryptedHere($value)
+            ? CookieUtil::prepareGetCookieValue($this->crypt, $value)
+            : $value;
     }
 }

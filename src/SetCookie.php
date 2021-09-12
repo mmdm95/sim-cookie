@@ -11,6 +11,10 @@ use Sim\Crypt\ICrypt;
 
 class SetCookie implements ISetCookie
 {
+    private const ENCODE_TYPE_NONE = 1;
+    private const ENCODE_TYPE_ENCODE = 2;
+    private const ENCODE_TYPE_DECODE = 3;
+
     /**
      * @var ICrypt|null
      */
@@ -98,13 +102,15 @@ class SetCookie implements ISetCookie
      * {@inheritdoc}
      * @throws CookieException
      */
-    public function save(bool $decode = true): bool
+    public function save(bool $encode = true): bool
     {
         // this is not useless, it'll return value if not encrypted here or
         // encrypted/not-encrypted value if encrypted here
         // here means in this library
         $_COOKIE[$this->getName()] = $this->getValueAccordingToEncryption();
-        return $this->setCookieToHeader($this->toString($decode, false));
+        return $this->setCookieToHeader(
+            $this->generalToString($encode ? self::ENCODE_TYPE_ENCODE : self::ENCODE_TYPE_NONE, false)
+        );
     }
 
     /**
@@ -306,73 +312,7 @@ class SetCookie implements ISetCookie
      */
     public function toString(bool $decode = true, bool $decrypt = false): string
     {
-        $expireTime = $this->getExpiration();
-
-        $maxAgeStr = 0 === $expireTime ? 0 : ($expireTime - \time());
-        $maxAgeStr = ((\PHP_VERSION_ID >= 70019 && \PHP_VERSION_ID < 70100) || \PHP_VERSION_ID >= 70105)
-            ? ($maxAgeStr < 0
-                ? '0'
-                : (string)$maxAgeStr)
-            : (string)$maxAgeStr;
-        $expireTimeStr = \gmdate('D, d-M-Y H:i:s T', $expireTime);
-
-        $value = $this->getValue();
-        $value = $decode ? \urldecode($value) : $value;
-        $value = $decrypt ? $value : $this->getValueAccordingToEncryption($value);
-        $headerStr = ISetCookie::COOKIE_HEADER . $this->getName() . '=' . $value;
-
-        if ($expireTime > 0) {
-            $headerStr .= '; expires=' . $expireTimeStr;
-        }
-        if ($expireTime > 0) {
-            $headerStr .= '; Max-Age=' . $maxAgeStr;
-        }
-
-        $path = $this->getPath();
-        if (!empty($path)) {
-            $headerStr .= '; path=' . $path;
-        }
-
-        $domain = $this->getDomain();
-        if (!empty($domain)) {
-            $headerStr .= '; domain=' . $domain;
-        }
-
-        if ($this->isSecure()) {
-            $headerStr .= '; secure';
-        }
-        if ($this->isHttpOnly()) {
-            $headerStr .= '; httponly';
-        }
-
-        // check for SameSite support
-        $useragent = (string)$this->useragent;
-        if ('' === $useragent) {
-            $useragent = SameSiteUtil::getUserAgent();
-
-        }
-        if (!SameSiteUtil::shouldSendSameSiteNone($useragent)) {
-            $this->setSameSite(null);
-        }
-
-        $sameSite = $this->getSameSite();
-        if (!\is_null($sameSite)) {
-            if ($sameSite === ICookie::SAME_SITE_NONE) {
-                if (!$this->isSecure()) {
-                    $headerStr .= '; secure';
-                }
-                $headerStr .= '; SameSite=None';
-            } elseif ($sameSite === ICookie::SAME_SITE_LAX) {
-                $headerStr .= '; SameSite=Lax';
-            } elseif ($sameSite === ICookie::SAME_SITE_STRICT) {
-                $headerStr .= '; SameSite=Strict';
-            }
-        }
-
-        $extra = \ltrim(\trim((string)$this->getExtra()), ';');
-        $headerStr .= !empty($extra) ? '; ' . $extra : '';
-
-        return $headerStr;
+        return $this->generalToString($decode ? self::ENCODE_TYPE_DECODE : self::ENCODE_TYPE_NONE, $decrypt);
     }
 
     /**
@@ -461,6 +401,87 @@ class SetCookie implements ISetCookie
             '_simplicity__data' => $value,
             '_simplicity__is_encrypted' => $encrypt,
         ]);
+    }
+
+    /**
+     * @param int $type
+     * @param bool $decrypt
+     * @return string
+     * @throws CookieException
+     */
+    protected function generalToString(int $type = self::ENCODE_TYPE_NONE, bool $decrypt = false)
+    {
+        $expireTime = $this->getExpiration();
+
+        $maxAgeStr = 0 === $expireTime ? 0 : ($expireTime - \time());
+        $maxAgeStr = ((\PHP_VERSION_ID >= 70019 && \PHP_VERSION_ID < 70100) || \PHP_VERSION_ID >= 70105)
+            ? ($maxAgeStr < 0
+                ? '0'
+                : (string)$maxAgeStr)
+            : (string)$maxAgeStr;
+        $expireTimeStr = \gmdate('D, d-M-Y H:i:s T', $expireTime);
+
+        $value = $this->getValue();
+        if ($type == self::ENCODE_TYPE_ENCODE) {
+            $value = \urlencode($value);
+        } elseif ($type == self::ENCODE_TYPE_DECODE) {
+            $value = \urldecode($value);
+        }
+        $value = $decrypt ? $value : $this->getValueAccordingToEncryption($value);
+        $headerStr = ISetCookie::COOKIE_HEADER . $this->getName() . '=' . $value;
+
+        if ($expireTime > 0) {
+            $headerStr .= '; expires=' . $expireTimeStr;
+        }
+        if ($expireTime > 0) {
+            $headerStr .= '; Max-Age=' . $maxAgeStr;
+        }
+
+        $path = $this->getPath();
+        if (!empty($path)) {
+            $headerStr .= '; path=' . $path;
+        }
+
+        $domain = $this->getDomain();
+        if (!empty($domain)) {
+            $headerStr .= '; domain=' . $domain;
+        }
+
+        if ($this->isSecure()) {
+            $headerStr .= '; secure';
+        }
+        if ($this->isHttpOnly()) {
+            $headerStr .= '; httponly';
+        }
+
+        // check for SameSite support
+        $useragent = (string)$this->useragent;
+        if ('' === $useragent) {
+            $useragent = SameSiteUtil::getUserAgent();
+
+        }
+        if (!SameSiteUtil::shouldSendSameSiteNone($useragent)) {
+            $this->setSameSite(null);
+        }
+
+        $sameSite = $this->getSameSite();
+        if (!\is_null($sameSite)) {
+            if ($sameSite === ICookie::SAME_SITE_NONE) {
+                if (!$this->isSecure()) {
+                    $headerStr .= '; secure';
+                }
+                $headerStr .= '; SameSite=None';
+            } elseif ($sameSite === ICookie::SAME_SITE_LAX) {
+                $headerStr .= '; SameSite=Lax';
+            } elseif ($sameSite === ICookie::SAME_SITE_STRICT) {
+                $headerStr .= '; SameSite=Strict';
+            }
+        }
+
+        $extra = \ltrim(\trim((string)$this->getExtra()), ';');
+        $headerStr .= !empty($extra) ? '; ' . $extra : '';
+
+        return $headerStr;
     }
 
     /**

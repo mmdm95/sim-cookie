@@ -105,7 +105,7 @@ class Cookie implements ICookie
     /**
      * {@inheritdoc}
      */
-    public function getAsString(?string $name = null, bool $decrypt = false): string
+    public function getAsString(?string $name = null, bool $decode = true, bool $decrypt = false): string
     {
         $cookieArr = [];
         if ($decrypt) {
@@ -117,11 +117,11 @@ class Cookie implements ICookie
             if (\is_array($cookie)) {
                 foreach ($cookie as $name => $cookieValue) {
                     if (!\is_null($cookieValue)) {
-                        $cookieArr[] = $name . '=' . $cookieValue;
+                        $cookieArr[] = $name . '=' . ($decode ? \urldecode($cookieValue) : $cookieValue);
                     }
                 }
             } elseif (!\is_null($cookie)) {
-                $cookieArr[] = $name . '=' . $cookie;
+                $cookieArr[] = $name . '=' . ($decode ? \urldecode($cookie) : $cookie);
             }
         }
 

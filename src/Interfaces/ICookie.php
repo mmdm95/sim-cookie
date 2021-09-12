@@ -43,10 +43,11 @@ interface ICookie
      *   To get all cookies as string, send null as $name
      *
      * @param string|null $name
+     * @param bool $decode
      * @param bool $decrypt
      * @return string
      */
-    public function getAsString(?string $name = null, bool $decrypt = false): string;
+    public function getAsString(?string $name = null, bool $decode = true, bool $decrypt = false): string;
 
     /**
      * Unset and remove a cookie data

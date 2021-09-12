@@ -84,7 +84,7 @@ Get cookie's value or `$prefer` if not defined.
 
 To get all cookies, do not send any parameter.
 
-#### `getAsString(?string $name = null, bool $decrypt = false): string`
+#### `getAsString(?string $name = null, bool $decode = true, bool $decrypt = false): string`
 
 Get string for a cookie.
 
@@ -217,7 +217,7 @@ Get useragent.
 This method will return the useragent you set not useragent from 
 `$_SERVER` variable.
 
-#### `toString(bool $decode = true): string`
+#### `toString(bool $decode = true, bool $decrypt = false): string`
 
 Get cookie header of this cookie as string
 
@@ -228,9 +228,9 @@ Example of output:
 "Set-Cookie: tmp-cookie=A simple cookie number 2; expires=Sat, 03-Apr-2021 10:45:55 GMT; Max-Age=60; secure; SameSite=None"
 ```
 
-#### `save(bool $decode = true): bool`
+#### `save(bool $encode = true): bool`
 
-Save configured cookie. `$decode` will decode `value`.
+Save configured cookie. `$encode` will encode `value`.
 
 **Note**
 

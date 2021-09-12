@@ -28,11 +28,9 @@ class SameSiteUtil
      */
     public static function getUserAgent(bool $ignore_cli_errors = true): string
     {
-        $useragent = '';
-        if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_USER_AGENT'])) {
-            $useragent = $_SERVER['HTTP_USER_AGENT'];
-        } else {
-            if (\php_sapi_name() != 'cli' || (\php_sapi_name() === 'cli' && !$ignore_cli_errors)) {
+        $useragent = GeneralUtil::getUserAgentFromHeader();
+        if (empty($useragent)) {
+            if (!GeneralUtil::isCli() || (GeneralUtil::isCli() && !$ignore_cli_errors)) {
                 throw new CookieException("No User agent founded!");
             }
         }
